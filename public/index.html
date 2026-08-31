@@ -7,6 +7,11 @@
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+<div class="auth-gate" id="auth-gate">
+  <div class="auth-panel"><a class="brand"><span class="brand-mark">V</span>VIBE <b>LIVE</b></a><p class="eyebrow">PRACTICE FAME. ZERO JUDGMENT.</p><h1>Build your stage.</h1><p class="auth-copy">Create your Vibe Live account to start watching and go live.</p>
+  <form id="auth-form"><label>USERNAME<input id="auth-username" required autocomplete="username" placeholder="yourusername"></label><label>PASSWORD<input id="auth-password" required minlength="8" type="password" autocomplete="new-password" placeholder="At least 8 characters"></label><p class="auth-error" id="auth-error"></p><button class="primary" type="submit" id="auth-submit">CREATE ACCOUNT</button></form><button class="switch-auth" id="switch-auth">Already have an account? Sign in</button><p class="auth-legal">One 7-day Premium trial per device. AI fans are always labeled.</p></div>
+</div>
+<div class="paywall" id="paywall" hidden><div class="paywall-card"><button class="paywall-close" id="paywall-close">×</button><p class="eyebrow">VIBE LIVE PREMIUM</p><h1>Ready for the main stage?</h1><p>Go live without limits and let the crowd show up.</p><div class="trial-badge">7 DAYS FREE · THEN $10.99 / MONTH</div><ul><li>Unlimited live rooms</li><li>Up to millions of AI fans</li><li>Live gifts and verified badge</li></ul><button class="primary" id="upgrade-button">START FREE TRIAL</button><p class="paywall-note">Cancel anytime. Subscription renews at $10.99/month after the trial.</p></div></div>
 <header class="topbar">
   <a class="brand" href="#" aria-label="Vibe Live home"><span class="brand-mark">V</span>VIBE <b>LIVE</b></a>
   <button class="icon-button" id="notice-button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></button>
@@ -26,6 +31,18 @@
   <section class="screen" id="screen-detail">
     <button class="back" id="detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back to feed</button>
     <div id="room-detail"></div>
+  </section>
+
+  <section class="screen" id="screen-live">
+    <div class="live-stage" id="live-stage">
+      <video id="camera-preview" autoplay muted playsinline></video>
+      <div class="camera-fallback" id="camera-fallback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 10 20 7v10l-5-3v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3Z"/></svg><p>Camera preview will appear here</p></div>
+      <div class="broadcast-top"><button class="close-live" id="end-live">×</button><span class="on-air"><i></i> LIVE</span><span class="live-count" id="live-viewers">◉ 0</span></div>
+      <div class="broadcast-info"><div class="broadcast-avatar">Y</div><div><strong id="broadcast-title">Your live</strong><p>@newcreator · <span id="elapsed">00:00</span></p></div></div>
+      <div class="comments" id="comments" aria-live="polite"></div>
+      <div class="hearts" id="hearts" aria-hidden="true"></div>
+      <div class="broadcast-actions"><button class="round-control" id="flip-camera" aria-label="Flip camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 0 0 5.7 5.7L1 10m3 5a9 9 0 0 0 14.8 3.3L23 14"/></svg></button><button class="round-control" id="mic-toggle" aria-label="Mute microphone"><svg id="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5m-4 0h8"/></svg></button><button class="comment-trigger" id="send-heart">♥</button></div>
+    </div>
   </section>
 
   <section class="screen" id="screen-add">
