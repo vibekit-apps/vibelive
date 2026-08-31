@@ -8,20 +8,14 @@ let rooms=JSON.parse(localStorage.getItem('vibe-live-rooms')||'[]'),selectedVibe
 let sessionToken=localStorage.getItem('vibe-live-token'),currentUser=null,authMode='signup';
 const deviceId=localStorage.getItem('vibe-live-device')||crypto.randomUUID();localStorage.setItem('vibe-live-device',deviceId);
 async function api(url,options={}){const res=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(sessionToken?{Authorization:'Bearer '+sessionToken}:{}),...(options.headers||{})}});const data=await res.json();if(!res.ok)throw new Error(data.error||'Something went wrong.');return data}
-function applyUser(user){currentUser=user;document.querySelector('.profile-card h1').textContent='@'+user.username;document.querySelector('.profile-card .avatar').textContent=user.username[0].toUpperCase();document.querySelector('.profile-card .muted').textContent=user.fullAccess?(user.owner?'Premium forever':'Premium active'):(user.trialEndsAt?'Your 7-day Premium trial is active.':'Free viewer');document.getElementById('auth-gate').hidden=true}
+function applyUser(user){currentUser=user;document.querySelector('.profile-card h1').textContent='@'+user.username;document.querySelector('.profile-card .avatar').textContent=user.username[0].toUpperCase();document.querySelector('.profile-card .muted').textContent='Free account · ready to go live.';document.getElementById('auth-gate').hidden=true}
 async function restoreSession(){if(!sessionToken)return;try{applyUser((await api('/api/me')).user)}catch{localStorage.removeItem('vibe-live-token');sessionToken=null}}
-function openPaywall(){document.getElementById('paywall').hidden=false}
-async function requireAccess(){if(!currentUser){document.getElementById('auth-gate').hidden=false;return false}if(currentUser.fullAccess)return true;openPaywall();return false}
+async function requireAccess(){if(!currentUser){document.getElementById('auth-gate').hidden=false;return false}return true}
 document.getElementById('auth-form').onsubmit=async e=>{e.preventDefault();const error=document.getElementById('auth-error'),submit=document.getElementById('auth-submit');error.textContent='';submit.disabled=true;try{const data=await api(authMode==='signup'?'/api/auth/signup':'/api/auth/signin',{method:'POST',body:JSON.stringify({username:document.getElementById('auth-username').value,password:document.getElementById('auth-password').value,deviceId})});sessionToken=data.token;localStorage.setItem('vibe-live-token',sessionToken);applyUser(data.user)}catch(err){error.textContent=err.message}finally{submit.disabled=false}};
 document.getElementById('switch-auth').onclick=()=>{authMode=authMode==='signup'?'signin':'signup';document.getElementById('auth-submit').textContent=authMode==='signup'?'CREATE ACCOUNT':'SIGN IN';document.getElementById('switch-auth').textContent=authMode==='signup'?'Already have an account? Sign in':'Need an account? Create one';document.getElementById('auth-password').autocomplete=authMode==='signup'?'new-password':'current-password';document.getElementById('auth-error').textContent=''};
-const paywall=document.getElementById('paywall');
-function closePaywall(){paywall.hidden=true}
-document.getElementById('paywall-close').onclick=closePaywall;
-paywall.addEventListener('click',event=>{if(event.target===paywall)closePaywall()});
 document.getElementById('notice-button').onclick=()=>alert('You’re all caught up.');
 document.querySelector('.edit-profile').onclick=()=>alert('Profile editing is coming next.');
 document.querySelectorAll('.settings-row').forEach(button=>button.onclick=()=>alert(button.textContent.trim()));
-document.getElementById('upgrade-button').onclick=async()=>{try{const {url}=await api('/api/billing/checkout',{method:'POST'});location.href=url}catch(err){document.querySelector('.paywall-note').textContent=err.message}};
 restoreSession();
 const allRooms=()=>[...rooms,...baseRooms];
 function show(name){screens.forEach(s=>s.classList.toggle('active',s.id===`screen-${name}`));tabs.forEach(t=>t.classList.toggle('active',t.dataset.screen===name));window.scrollTo(0,0);if(name==='home')renderFeed();if(name==='profile')renderProfile()}
