@@ -5,7 +5,8 @@ const baseRooms=[
  {id:'milo',name:'Unfiltered Opinions',handle:'@milotalks',viewers:'2,143',people:'M',color:'linear-gradient(135deg,#14532d,#22c55e 55%,#0891b2)',avatar:'M'}
 ];
 let rooms=JSON.parse(localStorage.getItem('vibe-live-rooms')||'[]'),selectedVibe='Just chatting';
-let sessionToken=localStorage.getItem('vibe-live-token'),currentUser=null,authMode='signup';
+let sessionToken=null,currentUser=null,authMode='signup';
+localStorage.removeItem('vibe-live-token');
 const deviceId=localStorage.getItem('vibe-live-device')||crypto.randomUUID();localStorage.setItem('vibe-live-device',deviceId);
 async function api(url,options={}){const res=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(sessionToken?{Authorization:'Bearer '+sessionToken}:{}),...(options.headers||{})}});const data=await res.json();if(!res.ok)throw new Error(data.error||'Something went wrong.');return data}
 function applyUser(user){currentUser=user;document.querySelector('.profile-card h1').textContent='@'+user.username;document.querySelector('.profile-card .avatar').textContent=user.username[0].toUpperCase();document.querySelector('.profile-card .muted').textContent='Free account · ready to go live.';document.getElementById('auth-gate').hidden=true}

@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const DATA_DIR = path.join(__dirname, 'lib', 'data');
-const USERS_FILE = path.join(DATA_DIR, 'accounts-v4.json');
+const USERS_FILE = path.join(DATA_DIR, 'accounts-v5.json');
 const OWNER_USERNAMES = ['2ktrey420', 'leslarel'];
 const MIME = {'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'};
 
