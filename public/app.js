@@ -14,7 +14,10 @@ function openPaywall(){document.getElementById('paywall').hidden=false}
 async function requireAccess(){if(!currentUser){document.getElementById('auth-gate').hidden=false;return false}if(currentUser.fullAccess)return true;openPaywall();return false}
 document.getElementById('auth-form').onsubmit=async e=>{e.preventDefault();const error=document.getElementById('auth-error'),submit=document.getElementById('auth-submit');error.textContent='';submit.disabled=true;try{const data=await api(authMode==='signup'?'/api/auth/signup':'/api/auth/signin',{method:'POST',body:JSON.stringify({username:document.getElementById('auth-username').value,password:document.getElementById('auth-password').value,deviceId})});sessionToken=data.token;localStorage.setItem('vibe-live-token',sessionToken);applyUser(data.user)}catch(err){error.textContent=err.message}finally{submit.disabled=false}};
 document.getElementById('switch-auth').onclick=()=>{authMode=authMode==='signup'?'signin':'signup';document.getElementById('auth-submit').textContent=authMode==='signup'?'CREATE ACCOUNT':'SIGN IN';document.getElementById('switch-auth').textContent=authMode==='signup'?'Already have an account? Sign in':'Need an account? Create one';document.getElementById('auth-password').autocomplete=authMode==='signup'?'new-password':'current-password';document.getElementById('auth-error').textContent=''};
-document.getElementById('paywall-close').onclick=()=>document.getElementById('paywall').hidden=true;
+const paywall=document.getElementById('paywall');
+function closePaywall(){paywall.hidden=true}
+document.getElementById('paywall-close').onclick=closePaywall;
+paywall.addEventListener('click',event=>{if(event.target===paywall)closePaywall()});
 document.getElementById('notice-button').onclick=()=>alert('You’re all caught up.');
 document.querySelector('.edit-profile').onclick=()=>alert('Profile editing is coming next.');
 document.querySelectorAll('.settings-row').forEach(button=>button.onclick=()=>alert(button.textContent.trim()));
