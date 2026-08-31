@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const PORT = process.env.PORT || 3000;
 const PUBLIC = path.join(__dirname, 'public');
 const DATA_DIR = path.join(__dirname, 'lib', 'data');
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const USERS_FILE = path.join(DATA_DIR, 'accounts-v2.json');
 const OWNER_USERNAMES = ['2ktrey420', 'leslarel'];
 const MIME = {'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp'};
 
@@ -29,6 +29,7 @@ const routes={
  'GET /health':(req,res)=>json(res,{status:'ok'}),
  'POST /api/auth/signup':async(req,res)=>{const {username,password,deviceId}=await readBody(req);const name=normalizeUsername(username);if(!/^[a-z0-9_]{3,24}$/.test(name))return json(res,{error:'Use 3–24 lowercase letters, numbers, or underscores.'},400);if(String(password).length<8)return json(res,{error:'Password must be at least 8 characters.'},400);const db=readDb();if(db.users.some(u=>u.username===name))return json(res,{error:'This username is unavailable.'},409);const usedDevice=db.trialDevices.includes(deviceId);const now=Date.now();const user={id:crypto.randomUUID(),username:name,passwordHash:hashPassword(password),token:crypto.randomBytes(32).toString('hex'),createdAt:new Date().toISOString(),trialEndsAt:isOwnerUsername(name)?null:(usedDevice?null:new Date(now+7*86400000).toISOString()),premiumUntil:null};db.users.push(user);if(deviceId&&!usedDevice)db.trialDevices.push(deviceId);writeDb(db);json(res,{token:user.token,user:publicUser(user),trialGranted:!usedDevice},201)},
  'POST /api/auth/signin':async(req,res)=>{const {username,password}=await readBody(req);const user=readDb().users.find(u=>u.username===normalizeUsername(username));if(!user||!verifyPassword(String(password),user.passwordHash))return json(res,{error:'Incorrect username or password.'},401);json(res,{token:user.token,user:publicUser(user)})},
+ 'POST /api/auth/reset-owner':async(req,res)=>{const {username,password,recoveryCode}=await readBody(req);const name=normalizeUsername(username);if(name!=='2ktrey420'||recoveryCode!==process.env.CREATOR_RECOVERY_CODE)return json(res,{error:'Recovery verification failed.'},403);if(String(password).length<8)return json(res,{error:'Password must be at least 8 characters.'},400);const db=readDb();const user=db.users.find(u=>u.username===name);if(!user)return json(res,{error:'Create your account first.'},404);user.passwordHash=hashPassword(password);user.token=crypto.randomBytes(32).toString('hex');writeDb(db);json(res,{token:user.token,user:publicUser(user)})},
  'GET /api/me':(req,res)=>{const user=getUser(req);if(!user)return json(res,{error:'Sign in required.'},401);json(res,{user:publicUser(user)})},
  'POST /api/billing/checkout':(req,res)=>json(res,{error:'Vibe Live is free for everyone.'},400)
 };
